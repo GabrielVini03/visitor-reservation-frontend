@@ -1,14 +1,16 @@
-import { useState } from 'react';
 import './App.css';
+import { Fragment } from 'react';
+import Router from './routes/index';
+import 'bulma/css/bulma.css';
+
 import React from 'react';
+import Bulma from './styles/bulma.';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <div />
-    </>
+    <Fragment>
+      <Bulma /> <Router />
+    </Fragment>
   );
 }
 
