@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Main } from '../../pages/Home/styles';
+import { VisitorContext } from '../../contexts/VisitorContext';
 
 interface IModalInsertPlayerProps {
   isActive: boolean;
   closeModalCallback: () => void;
+}
+
+interface IVisitor {
+  name: string;
+  email: string;
+  number: string;
+  reservationDate: string;
 }
 
 const ModalInsert: React.FC<IModalInsertPlayerProps> = ({
@@ -13,7 +21,34 @@ const ModalInsert: React.FC<IModalInsertPlayerProps> = ({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
-  const [localDataTime, setLocalDataTime] = useState('');
+  const [reservationDate, setReservationDate] = useState('');
+  const { handleAddVisitor } = useContext(VisitorContext);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    if (name === 'name') {
+      setName(value);
+    } else if (name === 'email') {
+      setEmail(value);
+    } else if (name === 'reservationDate') {
+      setReservationDate(value);
+    }
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const newVisitor: IVisitor = {
+      name,
+      email,
+      number,
+      reservationDate,
+    };
+
+    handleAddVisitor(newVisitor);
+    closeModalCallback();
+  };
 
   return (
     <div className="modal is-active">
@@ -59,19 +94,26 @@ const ModalInsert: React.FC<IModalInsertPlayerProps> = ({
                   className="input"
                   type="datetime-local"
                   placeholder="Digite a data e a hora da reserva"
-                  value={localDataTime}
-                  onChange={(e) => setLocalDataTime(e.target.value)}
+                  value={reservationDate}
+                  onChange={(e) => setReservationDate(e.target.value)}
                 />
               </div>
             </div>
             <div className="field is-grouped">
               <div className="control">
-                <button className="button is-primary" type="submit">
+                <button
+                  onClick={handleSubmit}
+                  className="button is-primary"
+                  type="submit"
+                >
                   Inserir
                 </button>
               </div>
               <div className="control">
-                <button className="button is-text" onClick={closeModalCallback}>
+                <button
+                  className="button is-danger"
+                  onClick={closeModalCallback}
+                >
                   Cancelar
                 </button>
               </div>

@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Main } from './styles';
 import ModalInsert from '../../Components/ModalInsert';
 import ModalUpdate from '../../Components/ModalUpdate';
+import { VisitorContext } from '../../contexts/VisitorContext';
 
 const Home: React.FC = () => {
   const [isModalInsertOpen, setIsModalInsertOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+  const { visitorList, handleAddVisitor } = useContext(VisitorContext);
 
   const openModalInsert = () => {
     setIsModalInsertOpen(true);
@@ -52,6 +54,25 @@ const Home: React.FC = () => {
           </div>
         </div>
       </div>
+      <table className="table" width={'90%'} align="center">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Data da Reserva</th>
+          </tr>
+        </thead>
+        <tbody>
+          {visitorList.map(({ name, email, number, reservationDate }) => (
+            <tr key={email}>
+              <td>{name}</td>
+              <td>{email}</td>
+              <td>{number}</td>
+              <td>{reservationDate}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </Main>
   );
 };
