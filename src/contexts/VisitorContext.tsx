@@ -1,6 +1,7 @@
 import React, { ReactNode, createContext, useState } from 'react';
 
 interface IVisitor {
+  id: string;
   name: string;
   email: string;
   number: string;
@@ -10,6 +11,7 @@ interface IVisitor {
 interface IVisitorContext {
   visitorList: IVisitor[];
   handleAddVisitor: (newVisitor: IVisitor) => void;
+  handleUpdateVisitor: (updateVisitor: IVisitor) => void;
 }
 
 interface IVisitorProviderProps {
@@ -21,6 +23,9 @@ export const VisitorContext = createContext<IVisitorContext>({
   handleAddVisitor: () => {
     // Implementação vazia
   },
+  handleUpdateVisitor: () => {
+    // Implementação vazia
+  },
 });
 
 export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
@@ -29,11 +34,24 @@ export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
   const [visitorList, setVisitorList] = useState<IVisitor[]>([]);
 
   const handleAddVisitor = (newVisitor: IVisitor) => {
-    setVisitorList((prevVisitorList) => [...prevVisitorList, newVisitor]);
+    setVisitorList((oldVisitorList) => [...oldVisitorList, newVisitor]);
+  };
+
+  const handleUpdateVisitor = (updateVisitor: IVisitor) => {
+    const updatedVisitorList = visitorList.map((visitor) => {
+      if (visitor.id === updateVisitor.id) {
+        return updateVisitor;
+      } else {
+        return visitor;
+      }
+    });
+    setVisitorList(updatedVisitorList);
   };
 
   return (
-    <VisitorContext.Provider value={{ visitorList, handleAddVisitor }}>
+    <VisitorContext.Provider
+      value={{ visitorList, handleAddVisitor, handleUpdateVisitor }}
+    >
       {children}
     </VisitorContext.Provider>
   );

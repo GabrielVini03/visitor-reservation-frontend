@@ -1,20 +1,22 @@
 import React, { useContext, useState } from 'react';
 import { Main } from '../../pages/Home/styles';
 import { VisitorContext } from '../../contexts/VisitorContext';
+import { v4 as uuid } from 'uuid';
 
-interface IModalInsertPlayerProps {
+interface IModalInsertVisitorProps {
   isActive: boolean;
   closeModalCallback: () => void;
 }
 
 interface IVisitor {
+  id: string;
   name: string;
   email: string;
   number: string;
   reservationDate: string;
 }
 
-const ModalInsert: React.FC<IModalInsertPlayerProps> = ({
+const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
   isActive,
   closeModalCallback,
 }) => {
@@ -40,6 +42,7 @@ const ModalInsert: React.FC<IModalInsertPlayerProps> = ({
     event.preventDefault();
 
     const newVisitor: IVisitor = {
+      id: uuid(),
       name,
       email,
       number,
@@ -47,6 +50,7 @@ const ModalInsert: React.FC<IModalInsertPlayerProps> = ({
     };
 
     handleAddVisitor(newVisitor);
+    console.log(newVisitor);
     closeModalCallback();
   };
 

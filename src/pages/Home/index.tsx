@@ -7,7 +7,10 @@ import { VisitorContext } from '../../contexts/VisitorContext';
 const Home: React.FC = () => {
   const [isModalInsertOpen, setIsModalInsertOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
-  const { visitorList, handleAddVisitor } = useContext(VisitorContext);
+  const [selectedVisitorId, setSelectedVisitorId] = useState<string | null>(
+    null
+  );
+  const { visitorList } = useContext(VisitorContext);
 
   const openModalInsert = () => {
     setIsModalInsertOpen(true);
@@ -25,6 +28,10 @@ const Home: React.FC = () => {
     setIsModalUpdateOpen(false);
   };
 
+  const handleVisitorClick = (id: string) => {
+    setSelectedVisitorId(id);
+  };
+
   return (
     <Main>
       {isModalInsertOpen && (
@@ -37,6 +44,7 @@ const Home: React.FC = () => {
         <ModalUpdate
           isActive={isModalUpdateOpen}
           closeModalCallback={closeModalUpdate}
+          selectedVisitor={selectedVisitorId}
         />
       )}
       <div className="container">
@@ -63,8 +71,8 @@ const Home: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {visitorList.map(({ name, email, number, reservationDate }) => (
-            <tr key={email}>
+          {visitorList.map(({ name, email, number, reservationDate, id }) => (
+            <tr key={id} onClick={() => handleVisitorClick(id)}>
               <td>{name}</td>
               <td>{email}</td>
               <td>{number}</td>

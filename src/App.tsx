@@ -4,12 +4,12 @@ import Router from './routes/index';
 import 'bulma/css/bulma.css';
 
 import React from 'react';
-import Bulma from './styles/bulma.';
+import Global from './styles/global';
 
 function App() {
   return (
     <Fragment>
-      <Bulma /> <Router />
+      <Global /> <Router />
     </Fragment>
   );
 }

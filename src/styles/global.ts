@@ -1,6 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 
-const Bulma = createGlobalStyle`
+const Global = createGlobalStyle`
 
 
   html, body {
@@ -10,4 +10,4 @@ const Bulma = createGlobalStyle`
   }
  
 `;
-export default Bulma;
+export default Global;

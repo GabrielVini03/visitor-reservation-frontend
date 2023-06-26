@@ -1,28 +1,32 @@
-import React, { Context, useContext, useState } from 'react';
+import React, { Context, useContext, useEffect, useState } from 'react';
 import { Main } from '../../pages/Home/styles';
 import { VisitorContext } from '../../contexts/VisitorContext';
 
-interface IModalEditPlayerProps {
+interface IModalVisitorEdit {
+  selectedVisitor: string | null;
   isActive: boolean;
   closeModalCallback: () => void;
 }
 
 interface IVisitor {
+  id: string;
   name: string;
   email: string;
   number: string;
   reservationDate: string;
 }
 
-const ModalEdit: React.FC<IModalEditPlayerProps> = ({
+const ModalEdit: React.FC<IModalVisitorEdit> = ({
+  selectedVisitor,
   isActive,
   closeModalCallback,
 }) => {
+  const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
   const [reservationDate, setReservationDate] = useState('');
-  const { handleAddVisitor } = useContext(VisitorContext);
+  const { visitorList, handleUpdateVisitor } = useContext(VisitorContext);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -36,17 +40,33 @@ const ModalEdit: React.FC<IModalEditPlayerProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (selectedVisitor) {
+      const visitorData = visitorList.find(
+        (visitor) => visitor.id === selectedVisitor
+      );
+      if (visitorData) {
+        setId(visitorData.id);
+        setName(visitorData.name);
+        setEmail(visitorData.email);
+        setNumber(visitorData.number);
+        setReservationDate(visitorData.reservationDate);
+      }
+    }
+  }, [selectedVisitor, visitorList]);
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
     const newVisitor: IVisitor = {
+      id,
       name,
       email,
       number,
       reservationDate,
     };
 
-    handleAddVisitor(newVisitor);
+    handleUpdateVisitor(newVisitor);
     closeModalCallback();
   };
 
@@ -106,7 +126,7 @@ const ModalEdit: React.FC<IModalEditPlayerProps> = ({
                   className="button is-primary"
                   type="submit"
                 >
-                  Inserir
+                  Atualizar
                 </button>
               </div>
               <div className="control">
