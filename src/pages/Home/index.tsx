@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Main } from './styles';
+import { Main, Table, TableHeaderCell, TableRow, FilterInput } from './styles';
 import ModalInsert from '../../Components/ModalInsert';
 import ModalUpdate from '../../Components/ModalUpdate';
 import ModalDelete from '../../Components/ModalDelete';
@@ -12,6 +12,8 @@ const Home: React.FC = () => {
   const [selectedVisitorId, setSelectedVisitorId] = useState<string | null>(
     null
   );
+  const [filterName, setFilterName] = useState('');
+
   const { visitorList } = useContext(VisitorContext);
 
   const openModalInsert = () => {
@@ -64,42 +66,54 @@ const Home: React.FC = () => {
           selectedVisitor={selectedVisitorId}
         />
       )}
-      <div className="container">
-        <div className="columns is-centered">
-          <div className="column is-half">
-            <div className="buttons is-centered">
-              <button className="button is-primary" onClick={openModalInsert}>
-                Inserir
-              </button>
-              <button className="button is-info" onClick={openModalUpdate}>
-                Atualizar
-              </button>
-              <button className="button is-danger" onClick={openModalDelete}>
-                Remover
-              </button>
-            </div>
-          </div>
-        </div>
+      <div className="buttons" style={{ marginLeft: '5%' }}>
+        <button className="button is-primary" onClick={openModalInsert}>
+          Inserir
+        </button>
+        <button className="button is-info" onClick={openModalUpdate}>
+          Atualizar
+        </button>
+        <button className="button is-danger" onClick={openModalDelete}>
+          Remover
+        </button>
       </div>
-      <table className="table" width={'90%'} align="center">
+      <div className="filter">
+        <FilterInput
+          className="input"
+          type="text"
+          placeholder="Filtrar por nome"
+          value={filterName}
+          onChange={(event) => setFilterName(event.target.value)}
+        />
+      </div>
+      <Table>
         <thead>
           <tr>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Data da Reserva</th>
+            <TableHeaderCell>Nome</TableHeaderCell>
+            <TableHeaderCell>Email</TableHeaderCell>
+            <TableHeaderCell>Telefone</TableHeaderCell>
+            <TableHeaderCell>Data da Reserva</TableHeaderCell>
           </tr>
         </thead>
         <tbody>
-          {visitorList.map(({ name, email, number, reservationDate, id }) => (
-            <tr key={id} onClick={() => handleVisitorClick(id)}>
-              <td>{name}</td>
-              <td>{email}</td>
-              <td>{number}</td>
-              <td>{reservationDate}</td>
-            </tr>
-          ))}
+          {visitorList
+            .filter((visitor) =>
+              visitor.name.toLowerCase().includes(filterName.toLowerCase())
+            )
+            .map(({ name, email, number, reservationDate, id }) => (
+              <TableRow
+                key={id}
+                onClick={() => handleVisitorClick(id)}
+                className={selectedVisitorId === id ? 'selected' : ''}
+              >
+                <td>{name}</td>
+                <td>{email}</td>
+                <td>{number}</td>
+                <td>{reservationDate}</td>
+              </TableRow>
+            ))}
         </tbody>
-      </table>
+      </Table>
     </Main>
   );
 };

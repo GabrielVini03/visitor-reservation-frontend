@@ -5,8 +5,7 @@ const Global = createGlobalStyle`
 
   html, body {
 
-    background: black
-  ;
+    background: white;
   
   }
  
