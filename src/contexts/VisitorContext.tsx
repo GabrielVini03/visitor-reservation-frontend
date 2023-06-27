@@ -12,6 +12,7 @@ interface IVisitorContext {
   visitorList: IVisitor[];
   handleAddVisitor: (newVisitor: IVisitor) => void;
   handleUpdateVisitor: (updateVisitor: IVisitor) => void;
+  handleDeleteVisitor: (deleteVisitorId: string) => void;
 }
 
 interface IVisitorProviderProps {
@@ -24,6 +25,9 @@ export const VisitorContext = createContext<IVisitorContext>({
     // Implementação vazia
   },
   handleUpdateVisitor: () => {
+    // Implementação vazia
+  },
+  handleDeleteVisitor: () => {
     // Implementação vazia
   },
 });
@@ -48,9 +52,21 @@ export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
     setVisitorList(updatedVisitorList);
   };
 
+  const handleDeleteVisitor = (deleteVisitorId: string) => {
+    const deleteVisitorList = visitorList.filter(
+      (visitor) => visitor.id !== deleteVisitorId
+    );
+    setVisitorList(deleteVisitorList);
+  };
+
   return (
     <VisitorContext.Provider
-      value={{ visitorList, handleAddVisitor, handleUpdateVisitor }}
+      value={{
+        visitorList,
+        handleAddVisitor,
+        handleUpdateVisitor,
+        handleDeleteVisitor,
+      }}
     >
       {children}
     </VisitorContext.Provider>

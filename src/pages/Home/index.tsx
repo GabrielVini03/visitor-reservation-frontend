@@ -2,11 +2,13 @@ import React, { useState, useContext } from 'react';
 import { Main } from './styles';
 import ModalInsert from '../../Components/ModalInsert';
 import ModalUpdate from '../../Components/ModalUpdate';
+import ModalDelete from '../../Components/ModalDelete';
 import { VisitorContext } from '../../contexts/VisitorContext';
 
 const Home: React.FC = () => {
   const [isModalInsertOpen, setIsModalInsertOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
   const [selectedVisitorId, setSelectedVisitorId] = useState<string | null>(
     null
   );
@@ -28,6 +30,14 @@ const Home: React.FC = () => {
     setIsModalUpdateOpen(false);
   };
 
+  const openModalDelete = () => {
+    setIsModalDeleteOpen(true);
+  };
+
+  const closeModalDelete = () => {
+    setIsModalDeleteOpen(false);
+  };
+
   const handleVisitorClick = (id: string) => {
     setSelectedVisitorId(id);
   };
@@ -47,6 +57,13 @@ const Home: React.FC = () => {
           selectedVisitor={selectedVisitorId}
         />
       )}
+      {isModalDeleteOpen && (
+        <ModalDelete
+          isActive={isModalDeleteOpen}
+          closeModalCallback={closeModalDelete}
+          selectedVisitor={selectedVisitorId}
+        />
+      )}
       <div className="container">
         <div className="columns is-centered">
           <div className="column is-half">
@@ -57,7 +74,9 @@ const Home: React.FC = () => {
               <button className="button is-info" onClick={openModalUpdate}>
                 Atualizar
               </button>
-              <button className="button is-danger">Remover</button>
+              <button className="button is-danger" onClick={openModalDelete}>
+                Remover
+              </button>
             </div>
           </div>
         </div>

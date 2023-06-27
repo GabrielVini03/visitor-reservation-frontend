@@ -141,11 +141,6 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({
           </form>
         </div>
       </div>
-      <button
-        className="modal-close is-large"
-        aria-label="Fechar"
-        onClick={closeModalCallback}
-      ></button>
     </div>
   );
 };

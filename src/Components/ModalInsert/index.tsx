@@ -50,7 +50,6 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
     };
 
     handleAddVisitor(newVisitor);
-    console.log(newVisitor);
     closeModalCallback();
   };
 
@@ -125,11 +124,6 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
           </form>
         </div>
       </div>
-      <button
-        className="modal-close is-large"
-        aria-label="Fechar"
-        onClick={closeModalCallback}
-      ></button>
     </div>
   );
 };
