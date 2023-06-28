@@ -14,7 +14,8 @@ const Home: React.FC = () => {
   );
   const [filterName, setFilterName] = useState('');
 
-  const { visitorList } = useContext(VisitorContext);
+  const { visitorList, setVisitor, currentVisitor } =
+    useContext(VisitorContext);
 
   const openModalInsert = () => {
     setIsModalInsertOpen(true);
@@ -25,7 +26,7 @@ const Home: React.FC = () => {
   };
 
   const openModalUpdate = () => {
-    setIsModalUpdateOpen(true);
+    if (currentVisitor) setIsModalUpdateOpen(true);
   };
 
   const closeModalUpdate = () => {
@@ -33,7 +34,7 @@ const Home: React.FC = () => {
   };
 
   const openModalDelete = () => {
-    setIsModalDeleteOpen(true);
+    if (currentVisitor) setIsModalDeleteOpen(true);
   };
 
   const closeModalDelete = () => {
@@ -42,6 +43,8 @@ const Home: React.FC = () => {
 
   const handleVisitorClick = (id: string) => {
     setSelectedVisitorId(id);
+
+    setVisitor(visitorList.find((visitor) => visitor.id === id));
   };
 
   return (
@@ -56,7 +59,6 @@ const Home: React.FC = () => {
         <ModalUpdate
           isActive={isModalUpdateOpen}
           closeModalCallback={closeModalUpdate}
-          selectedVisitor={selectedVisitorId}
         />
       )}
       {isModalDeleteOpen && (

@@ -1,6 +1,8 @@
 import React, { ReactNode, createContext, useState } from 'react';
+import { ICreateVisitor } from '../Components/ModalInsert';
+import { v4 as uuid } from 'uuid';
 
-interface IVisitor {
+export interface IVisitor {
   id: string;
   name: string;
   email: string;
@@ -10,7 +12,9 @@ interface IVisitor {
 
 interface IVisitorContext {
   visitorList: IVisitor[];
-  handleAddVisitor: (newVisitor: IVisitor) => void;
+  currentVisitor: IVisitor | undefined;
+  setVisitor: (visitor: IVisitor | undefined) => void;
+  handleAddVisitor: (newVisitor: ICreateVisitor) => void;
   handleUpdateVisitor: (updateVisitor: IVisitor) => void;
   handleDeleteVisitor: (deleteVisitorId: string) => void;
 }
@@ -19,26 +23,27 @@ interface IVisitorProviderProps {
   children: ReactNode;
 }
 
-export const VisitorContext = createContext<IVisitorContext>({
-  visitorList: [],
-  handleAddVisitor: () => {
-    // Implementação vazia
-  },
-  handleUpdateVisitor: () => {
-    // Implementação vazia
-  },
-  handleDeleteVisitor: () => {
-    // Implementação vazia
-  },
-});
+export const VisitorContext = createContext<IVisitorContext>(
+  {} as IVisitorContext
+);
 
 export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
   children,
 }) => {
   const [visitorList, setVisitorList] = useState<IVisitor[]>([]);
+  const [currentVisitor, setCurrentVisitor] = useState<IVisitor | undefined>(
+    undefined
+  );
 
-  const handleAddVisitor = (newVisitor: IVisitor) => {
-    setVisitorList((oldVisitorList) => [...oldVisitorList, newVisitor]);
+  const setVisitor = (visitor: IVisitor | undefined) => {
+    setCurrentVisitor(visitor);
+  };
+
+  const handleAddVisitor = (newVisitor: ICreateVisitor) => {
+    setVisitorList((oldVisitorList) => [
+      ...oldVisitorList,
+      { id: uuid(), ...newVisitor },
+    ]);
   };
 
   const handleUpdateVisitor = (updateVisitor: IVisitor) => {
@@ -63,6 +68,8 @@ export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
     <VisitorContext.Provider
       value={{
         visitorList,
+        currentVisitor,
+        setVisitor,
         handleAddVisitor,
         handleUpdateVisitor,
         handleDeleteVisitor,

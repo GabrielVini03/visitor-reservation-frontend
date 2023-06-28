@@ -1,15 +1,14 @@
 import React, { useContext, useState } from 'react';
-import { Main } from '../../pages/Home/styles';
+import { Label, Main } from './styles';
 import { VisitorContext } from '../../contexts/VisitorContext';
-import { v4 as uuid } from 'uuid';
+import { toast } from 'react-toastify';
 
 interface IModalInsertVisitorProps {
   isActive: boolean;
   closeModalCallback: () => void;
 }
 
-interface IVisitor {
-  id: string;
+export interface ICreateVisitor {
   name: string;
   email: string;
   number: string;
@@ -17,32 +16,55 @@ interface IVisitor {
 }
 
 const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
-  isActive,
   closeModalCallback,
 }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
   const [reservationDate, setReservationDate] = useState('');
-  const { handleAddVisitor } = useContext(VisitorContext);
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-
-    if (name === 'name') {
-      setName(value);
-    } else if (name === 'email') {
-      setEmail(value);
-    } else if (name === 'reservationDate') {
-      setReservationDate(value);
-    }
-  };
+  const { visitorList, handleAddVisitor, currentVisitor } =
+    useContext(VisitorContext);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const newVisitor: IVisitor = {
-      id: uuid(),
+    const existingVisitorByReservationDate = visitorList.find(
+      (visitor: ICreateVisitor) => visitor.reservationDate === reservationDate
+    );
+
+    if (
+      !(currentVisitor && currentVisitor.reservationDate === reservationDate) &&
+      existingVisitorByReservationDate
+    ) {
+      toast.error('Já existe uma reserva com o mesmo horário.');
+      return;
+    }
+
+    const existingVisitorByNumber = visitorList.find(
+      (visitor) => visitor.number === number
+    );
+
+    if (
+      !(currentVisitor && currentVisitor.number === number) &&
+      existingVisitorByNumber
+    ) {
+      toast.error('Esse número já está cadastrado por outro visitante.');
+      return;
+    }
+
+    const existingVisitorByEmail = visitorList.find(
+      (visitor) => visitor.email === email
+    );
+
+    if (
+      !(currentVisitor && currentVisitor.email === email) &&
+      existingVisitorByEmail
+    ) {
+      toast.error('Esse email já está cadastrado por outro visitante.');
+      return;
+    }
+
+    const newVisitor: ICreateVisitor = {
       name,
       email,
       number,
@@ -54,77 +76,79 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
   };
 
   return (
-    <div className="modal is-active">
-      <div className="modal-background"></div>
-      <div className="modal-content">
-        <div className="box">
-          <h2 className="title">Inserir dados da reserva</h2>
-          <form>
-            <div className="field">
-              <label className="label">Nome</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Digite o nome do visitante"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+    <Main>
+      <div className="modal is-active">
+        <div className="modal-background"></div>
+        <div className="modal-content">
+          <div className="box">
+            <h2 className="title">Inserir dados da reserva</h2>
+            <form>
+              <div className="field">
+                <Label className="label">Nome</Label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Digite o nome do visitante"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <Label className="label">Email</Label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Digite o email do visitante"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <Label className="label">Telefone</Label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Digite o número de telefone do visitante"
+                    value={number}
+                    onChange={(e) => setNumber(e.target.value)}
+                  />
+                </div>
+                <Label className="label">Data e hora</Label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="datetime-local"
+                    placeholder="Digite a data e a hora da reserva"
+                    value={reservationDate}
+                    onChange={(e) => setReservationDate(e.target.value)}
+                  />
+                </div>
               </div>
-              <label className="label">Email</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Digite o email do visitante"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+              <div className="field is-grouped">
+                <div className="control">
+                  <button
+                    onClick={handleSubmit}
+                    className="button is-primary"
+                    type="submit"
+                  >
+                    Inserir
+                  </button>
+                </div>
+                <div className="control">
+                  <button
+                    className="button is-danger"
+                    onClick={closeModalCallback}
+                  >
+                    Cancelar
+                  </button>
+                </div>
               </div>
-              <label className="label">Telefone</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Digite o número de telefone do visitante"
-                  value={number}
-                  onChange={(e) => setNumber(e.target.value)}
-                />
-              </div>
-              <label className="label">Data e hora</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="datetime-local"
-                  placeholder="Digite a data e a hora da reserva"
-                  value={reservationDate}
-                  onChange={(e) => setReservationDate(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="field is-grouped">
-              <div className="control">
-                <button
-                  onClick={handleSubmit}
-                  className="button is-primary"
-                  type="submit"
-                >
-                  Inserir
-                </button>
-              </div>
-              <div className="control">
-                <button
-                  className="button is-danger"
-                  onClick={closeModalCallback}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </Main>
   );
 };
 

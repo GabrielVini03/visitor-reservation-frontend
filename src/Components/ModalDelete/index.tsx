@@ -1,19 +1,11 @@
-import React, { Context, useContext, useEffect, useState } from 'react';
-import { Main } from '../../pages/Home/styles';
+import React, { useContext } from 'react';
+import { Main } from './styled';
 import { VisitorContext } from '../../contexts/VisitorContext';
 
 interface IModalVisitorDelete {
   selectedVisitor: string | null;
   isActive: boolean;
   closeModalCallback: () => void;
-}
-
-interface IVisitor {
-  id: string;
-  name: string;
-  email: string;
-  number: string;
-  reservationDate: string;
 }
 
 const ModalDelete: React.FC<IModalVisitorDelete> = ({
@@ -31,31 +23,33 @@ const ModalDelete: React.FC<IModalVisitorDelete> = ({
   };
 
   return (
-    <div className={`modal ${isActive ? 'is-active' : ''}`}>
-      <div className="modal-background"></div>
-      <div className="modal-content">
-        <div className="box">
-          <h2 className="title">Remover visitante</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="field is-grouped">
-              <div className="control">
-                <button className="button is-primary" type="submit">
-                  Remover
-                </button>
+    <Main>
+      <div className={`modal ${isActive ? 'is-active' : ''}`}>
+        <div className="modal-background"></div>
+        <div className="modal-content">
+          <div className="box">
+            <h2 className="title">Remover visitante</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="field is-grouped">
+                <div className="control">
+                  <button className="button is-primary" type="submit">
+                    Remover
+                  </button>
+                </div>
+                <div className="control">
+                  <button
+                    className="button is-danger"
+                    onClick={closeModalCallback}
+                  >
+                    Cancelar
+                  </button>
+                </div>
               </div>
-              <div className="control">
-                <button
-                  className="button is-danger"
-                  onClick={closeModalCallback}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </Main>
   );
 };
 

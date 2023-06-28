@@ -1,9 +1,9 @@
 import React, { Context, useContext, useEffect, useState } from 'react';
-import { Main } from '../../pages/Home/styles';
+import { Label, Main } from './styles';
 import { VisitorContext } from '../../contexts/VisitorContext';
+import { toast } from 'react-toastify';
 
 interface IModalVisitorEdit {
-  selectedVisitor: string | null;
   isActive: boolean;
   closeModalCallback: () => void;
 }
@@ -16,17 +16,14 @@ interface IVisitor {
   reservationDate: string;
 }
 
-const ModalEdit: React.FC<IModalVisitorEdit> = ({
-  selectedVisitor,
-  isActive,
-  closeModalCallback,
-}) => {
+const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
   const [reservationDate, setReservationDate] = useState('');
-  const { visitorList, handleUpdateVisitor } = useContext(VisitorContext);
+  const { visitorList, handleUpdateVisitor, currentVisitor } =
+    useContext(VisitorContext);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -41,22 +38,53 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({
   };
 
   useEffect(() => {
-    if (selectedVisitor) {
-      const visitorData = visitorList.find(
-        (visitor) => visitor.id === selectedVisitor
-      );
-      if (visitorData) {
-        setId(visitorData.id);
-        setName(visitorData.name);
-        setEmail(visitorData.email);
-        setNumber(visitorData.number);
-        setReservationDate(visitorData.reservationDate);
-      }
+    if (currentVisitor) {
+      setId(currentVisitor.id);
+      setName(currentVisitor.name);
+      setEmail(currentVisitor.email);
+      setNumber(currentVisitor.number);
+      setReservationDate(currentVisitor.reservationDate);
     }
-  }, [selectedVisitor, visitorList]);
+  }, [currentVisitor, visitorList]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+
+    const existingVisitorByReservationDate = visitorList.find(
+      (visitor: IVisitor) => visitor.reservationDate === reservationDate
+    );
+
+    if (
+      !(currentVisitor && currentVisitor.reservationDate === reservationDate) &&
+      existingVisitorByReservationDate
+    ) {
+      toast.error('Já existe uma reserva com o mesmo horário.');
+      return;
+    }
+
+    const existingVisitorByNumber = visitorList.find(
+      (visitor) => visitor.number === number
+    );
+
+    if (
+      !(currentVisitor && currentVisitor.number === number) &&
+      existingVisitorByNumber
+    ) {
+      toast.error('Esse número já está cadastrado por outro visitante.');
+      return;
+    }
+
+    const existingVisitorByEmail = visitorList.find(
+      (visitor) => visitor.email === email
+    );
+
+    if (
+      !(currentVisitor && currentVisitor.email === email) &&
+      existingVisitorByEmail
+    ) {
+      toast.error('Esse email já está cadastrado por outro visitante.');
+      return;
+    }
 
     const newVisitor: IVisitor = {
       id,
@@ -71,77 +99,79 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({
   };
 
   return (
-    <div className="modal is-active">
-      <div className="modal-background"></div>
-      <div className="modal-content">
-        <div className="box">
-          <h2 className="title">Editar dados do visitante</h2>
-          <form>
-            <div className="field">
-              <label className="label">Nome</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Digite o nome do visitante"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+    <Main>
+      <div className="modal is-active">
+        <div className="modal-background"></div>
+        <div className="modal-content">
+          <div className="box">
+            <h2 className="title">Editar dados da reserva</h2>
+            <form>
+              <div className="field">
+                <Label className="label">Nome</Label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Digite o nome do visitante"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <Label className="label">Email</Label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Digite o email do visitante"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <Label className="label">Telefone</Label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Digite o número de telefone do visitante"
+                    value={number}
+                    onChange={(e) => setNumber(e.target.value)}
+                  />
+                </div>
+                <Label className="label">Data e hora</Label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="datetime-local"
+                    placeholder="Digite a data e a hora da reserva"
+                    value={reservationDate}
+                    onChange={(e) => setReservationDate(e.target.value)}
+                  />
+                </div>
               </div>
-              <label className="label">Email</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Digite o email do visitante"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+              <div className="field is-grouped">
+                <div className="control">
+                  <button
+                    onClick={handleSubmit}
+                    className="button is-primary"
+                    type="submit"
+                  >
+                    Atualizar
+                  </button>
+                </div>
+                <div className="control">
+                  <button
+                    className="button is-danger"
+                    onClick={closeModalCallback}
+                  >
+                    Cancelar
+                  </button>
+                </div>
               </div>
-              <label className="label">Telefone</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Digite o número de telefone do visitante"
-                  value={number}
-                  onChange={(e) => setNumber(e.target.value)}
-                />
-              </div>
-              <label className="label">Data e hora</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="datetime-local"
-                  placeholder="Digite a data e a hora da reserva"
-                  value={reservationDate}
-                  onChange={(e) => setReservationDate(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="field is-grouped">
-              <div className="control">
-                <button
-                  onClick={handleSubmit}
-                  className="button is-primary"
-                  type="submit"
-                >
-                  Atualizar
-                </button>
-              </div>
-              <div className="control">
-                <button
-                  className="button is-danger"
-                  onClick={closeModalCallback}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </Main>
   );
 };
 
