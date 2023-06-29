@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Label, Main } from './styles';
 import { VisitorContext } from '../../contexts/VisitorContext';
 import { toast } from 'react-toastify';
+import * as Yup from 'yup';
 
 interface IModalInsertVisitorProps {
   isActive: boolean;
@@ -14,6 +15,19 @@ export interface ICreateVisitor {
   number: string;
   reservationDate: string;
 }
+
+const visitorSchema = Yup.object().shape({
+  name: Yup.string().required('O campo nome é obrigatório'),
+  email: Yup.string()
+    .email('Digite um email válido')
+    .required('O campo email é obrigatório'),
+  number: Yup.string()
+    .matches(/^[0-9]{10,11}$/, 'Digite um número de telefone válido')
+    .required('O campo número é obrigatório'),
+  reservationDate: Yup.string().required(
+    'O campo data de reserva é obrigatório'
+  ),
+});
 
 const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
   closeModalCallback,
@@ -64,15 +78,29 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
       return;
     }
 
-    const newVisitor: ICreateVisitor = {
-      name,
-      email,
-      number,
-      reservationDate,
-    };
+    try {
+      visitorSchema.validateSync({
+        name,
+        email,
+        number,
+        reservationDate,
+      });
 
-    handleAddVisitor(newVisitor);
-    closeModalCallback();
+      const newVisitor: ICreateVisitor = {
+        name,
+        email,
+        number,
+        reservationDate,
+      };
+
+      handleAddVisitor(newVisitor);
+      closeModalCallback();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+        return;
+      }
+    }
   };
 
   return (
@@ -84,7 +112,9 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
             <h2 className="title">Inserir dados da reserva</h2>
             <form>
               <div className="field">
-                <Label className="label">Nome</Label>
+                <Label className="label">
+                  Nome <span className="required-field">*</span>
+                </Label>
                 <div className="control">
                   <input
                     className="input"
@@ -94,7 +124,9 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
                     onChange={(e) => setName(e.target.value)}
                   />
                 </div>
-                <Label className="label">Email</Label>
+                <Label className="label">
+                  Emai <span className="required-field">*</span>
+                </Label>
                 <div className="control">
                   <input
                     className="input"
@@ -104,7 +136,12 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                <Label className="label">Telefone</Label>
+                <Label className="label">
+                  Telefone <span className="required-field">*</span>
+                  <span className="label-description">
+                    (Formato: 40998543643)
+                  </span>
+                </Label>
                 <div className="control">
                   <input
                     className="input"
@@ -114,7 +151,9 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
                     onChange={(e) => setNumber(e.target.value)}
                   />
                 </div>
-                <Label className="label">Data e hora</Label>
+                <Label className="label">
+                  Data e hora <span className="required-field">*</span>
+                </Label>
                 <div className="control">
                   <input
                     className="input"

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Main, Table, TableHeaderCell, TableRow, FilterInput } from './styles';
 import ModalInsert from '../../Components/ModalInsert';
 import ModalUpdate from '../../Components/ModalUpdate';
@@ -14,7 +14,7 @@ const Home: React.FC = () => {
   );
   const [filterName, setFilterName] = useState('');
 
-  const { visitorList, setVisitor, currentVisitor } =
+  const { visitorList, setVisitor, currentVisitor, setCurrentVisitor } =
     useContext(VisitorContext);
 
   const openModalInsert = () => {
@@ -31,6 +31,7 @@ const Home: React.FC = () => {
 
   const closeModalUpdate = () => {
     setIsModalUpdateOpen(false);
+    setCurrentVisitor(undefined);
   };
 
   const openModalDelete = () => {
@@ -46,6 +47,21 @@ const Home: React.FC = () => {
 
     setVisitor(visitorList.find((visitor) => visitor.id === id));
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const table = document.getElementById('table');
+      if (table && !table.contains(event.target as Node)) {
+        setCurrentVisitor(undefined);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [setCurrentVisitor]);
 
   return (
     <Main>
@@ -88,7 +104,7 @@ const Home: React.FC = () => {
           onChange={(event) => setFilterName(event.target.value)}
         />
       </div>
-      <Table>
+      <Table id="table">
         <thead>
           <tr>
             <TableHeaderCell>Nome</TableHeaderCell>
@@ -106,7 +122,7 @@ const Home: React.FC = () => {
               <TableRow
                 key={id}
                 onClick={() => handleVisitorClick(id)}
-                className={selectedVisitorId === id ? 'selected' : ''}
+                className={currentVisitor?.id === id ? 'selected' : ''}
               >
                 <td>{name}</td>
                 <td>{email}</td>

@@ -1,7 +1,8 @@
-import React, { Context, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Label, Main } from './styles';
 import { VisitorContext } from '../../contexts/VisitorContext';
 import { toast } from 'react-toastify';
+import * as Yup from 'yup';
 
 interface IModalVisitorEdit {
   isActive: boolean;
@@ -16,14 +17,31 @@ interface IVisitor {
   reservationDate: string;
 }
 
+const visitorSchema = Yup.object().shape({
+  name: Yup.string().required('O campo nome é obrigatório'),
+  email: Yup.string()
+    .required('O campo email é obrigatório')
+    .email('Digite um email valido'),
+  number: Yup.string()
+    .required('O campo número é obrigatório')
+    .matches(/^[0-9]{10,11}$/, 'Digite um número de telefone válido'),
+  reservationDate: Yup.string().required(
+    'O campo data de reserva é obrigatório'
+  ),
+});
+
 const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
   const [reservationDate, setReservationDate] = useState('');
-  const { visitorList, handleUpdateVisitor, currentVisitor } =
-    useContext(VisitorContext);
+  const {
+    visitorList,
+    handleUpdateVisitor,
+    currentVisitor,
+    setCurrentVisitor,
+  } = useContext(VisitorContext);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -86,16 +104,31 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
       return;
     }
 
-    const newVisitor: IVisitor = {
-      id,
-      name,
-      email,
-      number,
-      reservationDate,
-    };
+    try {
+      visitorSchema.validateSync({
+        name,
+        email,
+        number,
+        reservationDate,
+      });
 
-    handleUpdateVisitor(newVisitor);
-    closeModalCallback();
+      const newVisitor: IVisitor = {
+        id,
+        name,
+        email,
+        number,
+        reservationDate,
+      };
+
+      handleUpdateVisitor(newVisitor);
+      closeModalCallback();
+      setCurrentVisitor(undefined);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+        return;
+      }
+    }
   };
 
   return (

@@ -13,6 +13,7 @@ export interface IVisitor {
 interface IVisitorContext {
   visitorList: IVisitor[];
   currentVisitor: IVisitor | undefined;
+  setCurrentVisitor(visitor: IVisitor | undefined): void;
   setVisitor: (visitor: IVisitor | undefined) => void;
   handleAddVisitor: (newVisitor: ICreateVisitor) => void;
   handleUpdateVisitor: (updateVisitor: IVisitor) => void;
@@ -55,6 +56,7 @@ export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
       }
     });
     setVisitorList(updatedVisitorList);
+    setCurrentVisitor(undefined);
   };
 
   const handleDeleteVisitor = (deleteVisitorId: string) => {
@@ -69,6 +71,7 @@ export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
       value={{
         visitorList,
         currentVisitor,
+        setCurrentVisitor,
         setVisitor,
         handleAddVisitor,
         handleUpdateVisitor,
