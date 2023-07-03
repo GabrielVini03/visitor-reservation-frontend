@@ -48,21 +48,6 @@ const Home: React.FC = () => {
     setVisitor(visitorList.find((visitor) => visitor.id === id));
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const table = document.getElementById('table');
-      if (table && !table.contains(event.target as Node)) {
-        setCurrentVisitor(undefined);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [setCurrentVisitor]);
-
   return (
     <Main>
       {isModalInsertOpen && (

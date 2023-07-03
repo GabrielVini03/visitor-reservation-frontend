@@ -2,32 +2,12 @@ import React, { useContext, useState } from 'react';
 import { Label, Main } from './styles';
 import { VisitorContext } from '../../contexts/VisitorContext';
 import { toast } from 'react-toastify';
-import * as Yup from 'yup';
+import { ICreateVisitor } from '../../interfaces/ICreateVisitor';
 
 interface IModalInsertVisitorProps {
   isActive: boolean;
   closeModalCallback: () => void;
 }
-
-export interface ICreateVisitor {
-  name: string;
-  email: string;
-  number: string;
-  reservationDate: string;
-}
-
-const visitorSchema = Yup.object().shape({
-  name: Yup.string().required('O campo nome é obrigatório'),
-  email: Yup.string()
-    .email('Digite um email válido')
-    .required('O campo email é obrigatório'),
-  number: Yup.string()
-    .matches(/^[0-9]{10,11}$/, 'Digite um número de telefone válido')
-    .required('O campo número é obrigatório'),
-  reservationDate: Yup.string().required(
-    'O campo data de reserva é obrigatório'
-  ),
-});
 
 const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
   closeModalCallback,
@@ -36,71 +16,27 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
   const [reservationDate, setReservationDate] = useState('');
-  const { visitorList, handleAddVisitor, currentVisitor } =
+  const { handleAddVisitor, applyCommonValidations } =
     useContext(VisitorContext);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const existingVisitorByReservationDate = visitorList.find(
-      (visitor: ICreateVisitor) => visitor.reservationDate === reservationDate
-    );
+    const newVisitor: ICreateVisitor = {
+      name,
+      email,
+      number,
+      reservationDate,
+    };
 
-    if (
-      !(currentVisitor && currentVisitor.reservationDate === reservationDate) &&
-      existingVisitorByReservationDate
-    ) {
-      toast.error('Já existe uma reserva com o mesmo horário.');
+    const errors = applyCommonValidations(newVisitor);
+    if (errors.length > 0) {
+      toast.error(errors[0]);
       return;
     }
 
-    const existingVisitorByNumber = visitorList.find(
-      (visitor) => visitor.number === number
-    );
-
-    if (
-      !(currentVisitor && currentVisitor.number === number) &&
-      existingVisitorByNumber
-    ) {
-      toast.error('Esse número já está cadastrado por outro visitante.');
-      return;
-    }
-
-    const existingVisitorByEmail = visitorList.find(
-      (visitor) => visitor.email === email
-    );
-
-    if (
-      !(currentVisitor && currentVisitor.email === email) &&
-      existingVisitorByEmail
-    ) {
-      toast.error('Esse email já está cadastrado por outro visitante.');
-      return;
-    }
-
-    try {
-      visitorSchema.validateSync({
-        name,
-        email,
-        number,
-        reservationDate,
-      });
-
-      const newVisitor: ICreateVisitor = {
-        name,
-        email,
-        number,
-        reservationDate,
-      };
-
-      handleAddVisitor(newVisitor);
-      closeModalCallback();
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-        return;
-      }
-    }
+    handleAddVisitor(newVisitor);
+    closeModalCallback();
   };
 
   return (
