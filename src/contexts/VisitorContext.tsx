@@ -118,11 +118,10 @@ export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
       errors.push('Esse email já está cadastrado por outro visitante.');
     }
 
-    console.log(existingVisitorByEmail);
-    console.log(visitor.email);
-    console.log(currentVisitor);
-    console.log(currentVisitor?.email);
-    console.log(existingVisitorByEmail?.id);
+    console.log('Name: ' + visitor.name);
+    console.log('Email: ' + visitor.email);
+    console.log('Number: ' + visitor.number);
+    console.log('Reservation date: ' + visitor.reservationDate);
 
     try {
       visitorSchema.validateSync(visitor, { abortEarly: false });

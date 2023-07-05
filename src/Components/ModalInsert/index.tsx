@@ -3,6 +3,7 @@ import { Label, Main } from './styles';
 import { VisitorContext } from '../../contexts/VisitorContext';
 import { toast } from 'react-toastify';
 import { ICreateVisitor } from '../../interfaces/ICreateVisitor';
+import { createVisitorReservation } from '../../service/apiService';
 
 interface IModalInsertVisitorProps {
   isActive: boolean;
@@ -19,7 +20,7 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
   const { handleAddVisitor, applyCommonValidations } =
     useContext(VisitorContext);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const newVisitor: ICreateVisitor = {
@@ -33,6 +34,18 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
     if (errors.length > 0) {
       toast.error(errors[0]);
       return;
+    }
+    try {
+      const response = await createVisitorReservation(newVisitor);
+      if (response.status === 200) {
+        toast.success('Reserva criada com sucesso!');
+        closeModalCallback();
+      } else {
+        toast.error('Não foi possível criar a reserva do visitante.');
+      }
+    } catch (error) {
+      toast.error('Ocorreu um erro ao criar a reserva do visitante.');
+      console.error('Erro completo:' + error);
     }
 
     handleAddVisitor(newVisitor);
