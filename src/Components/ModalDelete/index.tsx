@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Main } from './styled';
-import { VisitorContext } from '../../contexts/VisitorContext';
+import { toast } from 'react-toastify';
+import { VisitorServiceContext } from '../../service/apiService';
 
 interface IModalVisitorDelete {
   selectedVisitor: string | null;
@@ -13,12 +14,20 @@ const ModalDelete: React.FC<IModalVisitorDelete> = ({
   isActive,
   closeModalCallback,
 }) => {
-  const { handleDeleteVisitor } = useContext(VisitorContext);
-
-  const handleSubmit = (event: React.FormEvent) => {
+  const { deleteVisitorReservation } = useContext(VisitorServiceContext);
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (selectedVisitor) handleDeleteVisitor(selectedVisitor);
+    try {
+      if (selectedVisitor) {
+        await deleteVisitorReservation(selectedVisitor);
+        toast.success('Reserva do visitante excluída com sucesso.');
+      }
+    } catch (error) {
+      console.error('Erro ao excluir reserva do visitante', error);
+      toast.error('Erro ao excluir reserva do visitante.');
+    }
+
     closeModalCallback();
   };
 

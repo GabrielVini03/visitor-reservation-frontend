@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { Main, Table, TableHeaderCell, TableRow, FilterInput } from './styles';
 import ModalInsert from '../../Components/ModalInsert';
 import ModalUpdate from '../../Components/ModalUpdate';
@@ -101,20 +101,30 @@ const Home: React.FC = () => {
         <tbody>
           {visitorList
             .filter((visitor) =>
-              visitor.name.toLowerCase().includes(filterName.toLowerCase())
+              visitor.visitorName
+                .toLowerCase()
+                .includes(filterName.toLowerCase())
             )
-            .map(({ name, email, number, reservationDate, id }) => (
-              <TableRow
-                key={id}
-                onClick={() => handleVisitorClick(id)}
-                className={currentVisitor?.id === id ? 'selected' : ''}
-              >
-                <td>{name}</td>
-                <td>{email}</td>
-                <td>{number}</td>
-                <td>{reservationDate}</td>
-              </TableRow>
-            ))}
+            .map(
+              ({
+                id,
+                visitorName,
+                visitorEmail,
+                visitorPhone,
+                reservationDate,
+              }) => (
+                <TableRow
+                  key={id}
+                  onClick={() => handleVisitorClick(id)}
+                  className={currentVisitor?.id === id ? 'selected' : ''}
+                >
+                  <td>{visitorName}</td>
+                  <td>{visitorEmail}</td>
+                  <td>{visitorPhone}</td>
+                  <td>{reservationDate}</td>
+                </TableRow>
+              )
+            )}
         </tbody>
       </Table>
     </Main>

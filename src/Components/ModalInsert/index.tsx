@@ -3,7 +3,7 @@ import { Label, Main } from './styles';
 import { VisitorContext } from '../../contexts/VisitorContext';
 import { toast } from 'react-toastify';
 import { ICreateVisitor } from '../../interfaces/ICreateVisitor';
-import { createVisitorReservation } from '../../service/apiService';
+import { VisitorServiceContext } from '../../service/apiService';
 
 interface IModalInsertVisitorProps {
   isActive: boolean;
@@ -13,20 +13,20 @@ interface IModalInsertVisitorProps {
 const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
   closeModalCallback,
 }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [number, setNumber] = useState('');
+  const [visitorName, setvisitorName] = useState('');
+  const [visitorEmail, setvisitorEmail] = useState('');
+  const [visitorPhone, setvisitorPhone] = useState('');
   const [reservationDate, setReservationDate] = useState('');
-  const { handleAddVisitor, applyCommonValidations } =
-    useContext(VisitorContext);
+  const { applyCommonValidations } = useContext(VisitorContext);
+  const { createVisitorReservation } = useContext(VisitorServiceContext);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const newVisitor: ICreateVisitor = {
-      name,
-      email,
-      number,
+      visitorName,
+      visitorEmail,
+      visitorPhone,
       reservationDate,
     };
 
@@ -37,7 +37,8 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
     }
     try {
       const response = await createVisitorReservation(newVisitor);
-      if (response.status === 200) {
+      console.log('Nova reserva de visita: ' + response);
+      if (response.id) {
         toast.success('Reserva criada com sucesso!');
         closeModalCallback();
       } else {
@@ -45,10 +46,7 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
       }
     } catch (error) {
       toast.error('Ocorreu um erro ao criar a reserva do visitante.');
-      console.error('Erro completo:' + error);
     }
-
-    handleAddVisitor(newVisitor);
     closeModalCallback();
   };
 
@@ -69,8 +67,8 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
                     className="input"
                     type="text"
                     placeholder="Digite o nome do visitante"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={visitorName}
+                    onChange={(e) => setvisitorName(e.target.value)}
                   />
                 </div>
                 <Label className="label">
@@ -80,9 +78,9 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
                   <input
                     className="input"
                     type="text"
-                    placeholder="Digite o email do visitante"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Digite o visitorEmail do visitante"
+                    value={visitorEmail}
+                    onChange={(e) => setvisitorEmail(e.target.value)}
                   />
                 </div>
                 <Label className="label">
@@ -96,8 +94,8 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
                     className="input"
                     type="text"
                     placeholder="Digite o número de telefone do visitante"
-                    value={number}
-                    onChange={(e) => setNumber(e.target.value)}
+                    value={visitorPhone}
+                    onChange={(e) => setvisitorPhone(e.target.value)}
                   />
                 </div>
                 <Label className="label">

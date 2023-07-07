@@ -1,15 +1,15 @@
 import React, { ReactNode, createContext, useState } from 'react';
 import { ICreateVisitor } from '../interfaces/ICreateVisitor';
-import { v4 as uuid } from 'uuid';
 import { IVisitor } from '../interfaces/IVisitor';
 import * as Yup from 'yup';
 
 interface IVisitorContext {
   visitorList: IVisitor[];
   currentVisitor: IVisitor | undefined;
+  setVisitorList(visitorList: IVisitor[]): void;
   setCurrentVisitor(visitor: IVisitor | undefined): void;
   setVisitor: (visitor: IVisitor | undefined) => void;
-  handleAddVisitor: (newVisitor: ICreateVisitor) => void;
+  handleAddVisitor: (newVisitor: ICreateVisitor, reservationId: string) => void;
   handleUpdateVisitor: (updateVisitor: IVisitor) => void;
   handleDeleteVisitor: (deleteVisitorId: string) => void;
   applyCommonValidations: (
@@ -23,11 +23,11 @@ interface IVisitorProviderProps {
 }
 
 const visitorSchema = Yup.object().shape({
-  name: Yup.string().required('O campo nome é obrigatório'),
-  email: Yup.string()
-    .required('O campo email é obrigatório')
-    .email('Digite um email válido'),
-  number: Yup.string()
+  visitorName: Yup.string().required('O campo nome é obrigatório'),
+  visitorEmail: Yup.string()
+    .required('O campo visitorEmail é obrigatório')
+    .email('Digite um visitorEmail válido'),
+  visitorPhone: Yup.string()
     .required('O campo número é obrigatório')
     .matches(/^[0-9]{10,11}$/, 'Digite um número de telefone válido'),
   reservationDate: Yup.string().required(
@@ -51,10 +51,13 @@ export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
     setCurrentVisitor(visitor);
   };
 
-  const handleAddVisitor = (newVisitor: ICreateVisitor) => {
+  const handleAddVisitor = (
+    newVisitor: ICreateVisitor,
+    reservationId: string
+  ) => {
     setVisitorList((oldVisitorList) => [
       ...oldVisitorList,
-      { id: uuid(), ...newVisitor },
+      { id: reservationId, ...newVisitor },
     ]);
   };
 
@@ -96,32 +99,31 @@ export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
       errors.push('Já existe uma reserva com o mesmo horário.');
     }
 
-    const existingVisitorByNumber = visitorList.find(
-      (v) => v.number === visitor.number
+    const existingVisitorByvisitorPhone = visitorList.find(
+      (v) => v.visitorPhone === visitor.visitorPhone
     );
 
     if (
-      !(currentVisitor && currentVisitor.number === visitor.number) &&
-      existingVisitorByNumber
+      !(
+        currentVisitor && currentVisitor.visitorPhone === visitor.visitorPhone
+      ) &&
+      existingVisitorByvisitorPhone
     ) {
       errors.push('Esse número já está cadastrado por outro visitante.');
     }
 
-    const existingVisitorByEmail = visitorList.find(
-      (v) => v.email === visitor.email
+    const existingVisitorByvisitorEmail = visitorList.find(
+      (v) => v.visitorEmail === visitor.visitorEmail
     );
 
     if (
-      !(currentVisitor && currentVisitor.email === visitor.email) &&
-      existingVisitorByEmail
+      !(
+        currentVisitor && currentVisitor.visitorName === visitor.visitorEmail
+      ) &&
+      existingVisitorByvisitorEmail
     ) {
-      errors.push('Esse email já está cadastrado por outro visitante.');
+      errors.push('Esse visitorEmail já está cadastrado por outro visitante.');
     }
-
-    console.log('Name: ' + visitor.name);
-    console.log('Email: ' + visitor.email);
-    console.log('Number: ' + visitor.number);
-    console.log('Reservation date: ' + visitor.reservationDate);
 
     try {
       visitorSchema.validateSync(visitor, { abortEarly: false });
@@ -140,6 +142,7 @@ export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
       value={{
         visitorList,
         currentVisitor,
+        setVisitorList,
         setCurrentVisitor,
         setVisitor,
         handleAddVisitor,

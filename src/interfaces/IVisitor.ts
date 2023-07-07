@@ -1,7 +1,7 @@
 export interface IVisitor {
   id: string;
-  name: string;
-  email: string;
-  number: string;
+  visitorName: string;
+  visitorEmail: string;
+  visitorPhone: string;
   reservationDate: string;
 }

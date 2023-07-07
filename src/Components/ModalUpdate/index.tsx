@@ -11,24 +11,20 @@ interface IModalVisitorEdit {
 
 const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
   const [id, setId] = useState('');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [number, setNumber] = useState('');
+  const [visitorName, setvisitorName] = useState('');
+  const [visitorEmail, setvisitorEmail] = useState('');
+  const [visitorPhone, setvisitorPhone] = useState('');
   const [reservationDate, setReservationDate] = useState('');
-  const {
-    visitorList,
-    handleUpdateVisitor,
-    currentVisitor,
-    applyCommonValidations,
-  } = useContext(VisitorContext);
+  const { visitorList, currentVisitor, applyCommonValidations } =
+    useContext(VisitorContext);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
-    if (name === 'name') {
-      setName(value);
-    } else if (name === 'email') {
-      setEmail(value);
+    if (name === 'visitorName') {
+      setvisitorName(value);
+    } else if (name === 'visitorEmail') {
+      setvisitorEmail(value);
     } else if (name === 'reservationDate') {
       setReservationDate(value);
     }
@@ -37,9 +33,9 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
   useEffect(() => {
     if (currentVisitor) {
       setId(currentVisitor.id);
-      setName(currentVisitor.name);
-      setEmail(currentVisitor.email);
-      setNumber(currentVisitor.number);
+      setvisitorName(currentVisitor.visitorName);
+      setvisitorEmail(currentVisitor.visitorEmail);
+      setvisitorPhone(currentVisitor.visitorPhone);
       setReservationDate(currentVisitor.reservationDate);
     }
   }, [currentVisitor, visitorList]);
@@ -49,9 +45,9 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
 
     const updatedVisitor: IVisitor = {
       ...currentVisitor!,
-      name,
-      email,
-      number,
+      visitorName,
+      visitorEmail,
+      visitorPhone,
       reservationDate,
     };
 
@@ -60,8 +56,6 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
       toast.error(errors[0]);
       return;
     }
-
-    handleUpdateVisitor(updatedVisitor);
     closeModalCallback();
   };
 
@@ -80,18 +74,18 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
                     className="input"
                     type="text"
                     placeholder="Digite o nome do visitante"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={visitorName}
+                    onChange={(e) => setvisitorName(e.target.value)}
                   />
                 </div>
-                <Label className="label">Email</Label>
+                <Label className="label">visitorEmail</Label>
                 <div className="control">
                   <input
                     className="input"
                     type="text"
-                    placeholder="Digite o email do visitante"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Digite o visitorEmail do visitante"
+                    value={visitorEmail}
+                    onChange={(e) => setvisitorEmail(e.target.value)}
                   />
                 </div>
                 <Label className="label">Telefone</Label>
@@ -100,8 +94,8 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
                     className="input"
                     type="text"
                     placeholder="Digite o número de telefone do visitante"
-                    value={number}
-                    onChange={(e) => setNumber(e.target.value)}
+                    value={visitorPhone}
+                    onChange={(e) => setvisitorPhone(e.target.value)}
                   />
                 </div>
                 <Label className="label">Data e hora</Label>
