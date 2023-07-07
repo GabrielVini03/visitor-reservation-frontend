@@ -25,8 +25,8 @@ interface IVisitorProviderProps {
 const visitorSchema = Yup.object().shape({
   visitorName: Yup.string().required('O campo nome é obrigatório'),
   visitorEmail: Yup.string()
-    .required('O campo visitorEmail é obrigatório')
-    .email('Digite um visitorEmail válido'),
+    .required('O campo email é obrigatório')
+    .email('Digite um email válido'),
   visitorPhone: Yup.string()
     .required('O campo número é obrigatório')
     .matches(/^[0-9]{10,11}$/, 'Digite um número de telefone válido'),
@@ -118,11 +118,11 @@ export const VisitorProvider: React.FC<IVisitorProviderProps> = ({
 
     if (
       !(
-        currentVisitor && currentVisitor.visitorName === visitor.visitorEmail
+        currentVisitor && currentVisitor.visitorEmail === visitor.visitorEmail
       ) &&
       existingVisitorByvisitorEmail
     ) {
-      errors.push('Esse visitorEmail já está cadastrado por outro visitante.');
+      errors.push('Esse email já está cadastrado por outro visitante.');
     }
 
     try {

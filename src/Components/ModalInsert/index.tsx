@@ -37,7 +37,6 @@ const ModalInsert: React.FC<IModalInsertVisitorProps> = ({
     }
     try {
       const response = await createVisitorReservation(newVisitor);
-      console.log('Nova reserva de visita: ' + response);
       if (response.id) {
         toast.success('Reserva criada com sucesso!');
         closeModalCallback();

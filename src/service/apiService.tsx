@@ -9,6 +9,10 @@ const API_URL = 'http://localhost:8080';
 
 interface IVisitorService {
   createVisitorReservation(visitor: ICreateVisitor): Promise<IVisitor>;
+  updateVisitorReservation(
+    visitorReservationId: string,
+    updateVisitorReservation: IVisitor
+  ): Promise<IVisitor>;
   findVisitorReservation(
     visitorReservationId: string
   ): Promise<IVisitor | null>;
@@ -29,8 +33,12 @@ export const VisitorServiceContext = createContext<IVisitorService>(
 export const VisitorServiceContextProvider: React.FC<
   IVisitorServiceContextProviderProps
 > = ({ children }) => {
-  const { handleAddVisitor, handleDeleteVisitor, setVisitorList } =
-    useContext(VisitorContext);
+  const {
+    handleAddVisitor,
+    handleDeleteVisitor,
+    handleUpdateVisitor,
+    setVisitorList,
+  } = useContext(VisitorContext);
 
   useEffect(() => {
     const fetchVisitorReservations = async () => {
@@ -77,6 +85,38 @@ export const VisitorServiceContextProvider: React.FC<
     }
   };
 
+  const updateVisitorReservation = async (
+    visitorReservationId: string,
+    updateVisitorReservation: IVisitor
+  ): Promise<IVisitor> => {
+    try {
+      const url = `${API_URL}/api/visitorReservations/${visitorReservationId}`;
+      const requestBody = {
+        visitorName: updateVisitorReservation.visitorName,
+        visitorEmail: updateVisitorReservation.visitorEmail,
+        visitorPhone: updateVisitorReservation.visitorPhone,
+        reservationDate: updateVisitorReservation.reservationDate,
+      };
+
+      const response = await axios.put(url, requestBody);
+
+      const updatedVisitorReservation: IVisitor = {
+        id: response.data.id,
+        visitorName: response.data.visitorName,
+        visitorEmail: response.data.visitorEmail,
+        visitorPhone: response.data.visitorPhone,
+        reservationDate: response.data.reservationDate,
+      };
+
+      handleUpdateVisitor(updatedVisitorReservation);
+
+      return updatedVisitorReservation;
+    } catch (error) {
+      console.error('Não foi possível atualizar a reserva do visitante', error);
+      throw error;
+    }
+  };
+
   const findVisitorReservation = async (
     visitorReservationId: string
   ): Promise<IVisitor | null> => {
@@ -106,7 +146,7 @@ export const VisitorServiceContextProvider: React.FC<
   ): Promise<AxiosResponse> => {
     try {
       const url = `${API_URL}/api/visitorReservations/${visitorReservationId}`;
-      handleDeleteVisitor;
+      handleDeleteVisitor(visitorReservationId);
       return await axios.delete(url);
     } catch (error) {
       console.error('Não foi possível excluir a reserva do visitante', error);
@@ -118,6 +158,7 @@ export const VisitorServiceContextProvider: React.FC<
     <VisitorServiceContext.Provider
       value={{
         createVisitorReservation,
+        updateVisitorReservation,
         findVisitorReservation,
         listVisitorReservations,
         deleteVisitorReservation,

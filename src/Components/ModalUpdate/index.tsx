@@ -3,6 +3,7 @@ import { Label, Main } from './styles';
 import { VisitorContext } from '../../contexts/VisitorContext';
 import { toast } from 'react-toastify';
 import { IVisitor } from '../../interfaces/IVisitor';
+import { VisitorServiceContext } from '../../service/apiService';
 
 interface IModalVisitorEdit {
   isActive: boolean;
@@ -17,6 +18,7 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
   const [reservationDate, setReservationDate] = useState('');
   const { visitorList, currentVisitor, applyCommonValidations } =
     useContext(VisitorContext);
+  const { updateVisitorReservation } = useContext(VisitorServiceContext);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -40,7 +42,7 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
     }
   }, [currentVisitor, visitorList]);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const updatedVisitor: IVisitor = {
@@ -56,6 +58,17 @@ const ModalEdit: React.FC<IModalVisitorEdit> = ({ closeModalCallback }) => {
       toast.error(errors[0]);
       return;
     }
+
+    try {
+      if (currentVisitor) {
+        await updateVisitorReservation(currentVisitor.id, updatedVisitor);
+        toast.success('Visitante atualizado com sucesso.');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar visitante', error);
+      toast.error('Erro ao atualizar visitante.');
+    }
+
     closeModalCallback();
   };
 

@@ -9,9 +9,6 @@ const Home: React.FC = () => {
   const [isModalInsertOpen, setIsModalInsertOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
-  const [selectedVisitorId, setSelectedVisitorId] = useState<string | null>(
-    null
-  );
   const [filterName, setFilterName] = useState('');
 
   const { visitorList, setVisitor, currentVisitor, setCurrentVisitor } =
@@ -43,9 +40,12 @@ const Home: React.FC = () => {
   };
 
   const handleVisitorClick = (id: string) => {
-    setSelectedVisitorId(id);
+    if (id) {
+      const visitor = visitorList.find((v) => v.id === id);
+      setCurrentVisitor(visitor);
+    }
 
-    setVisitor(visitorList.find((visitor) => visitor.id === id));
+    setVisitor(visitorList.find((v) => v.id === id));
   };
 
   return (
@@ -66,7 +66,7 @@ const Home: React.FC = () => {
         <ModalDelete
           isActive={isModalDeleteOpen}
           closeModalCallback={closeModalDelete}
-          selectedVisitor={selectedVisitorId}
+          currentVisitor={currentVisitor}
         />
       )}
       <div className="buttons" style={{ marginLeft: '5%' }}>
